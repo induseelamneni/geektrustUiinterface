@@ -1,0 +1,64 @@
+.list-active {
+  background-color: gray;
+  color: #ffffff;
+}
+
+.name-el {
+  width: 20%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+}
+.email-el {
+  width: 10%;
+  height: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+@media screen and (max-width: 576px) {
+  .name-el {
+    width: 10%;
+    font-size: 9px;
+  }
+  .email-el {
+    width: 5%;
+    font-size: 9px;
+    flex-wrap: wrap;
+    margin-left: 20px;
+    margin-left: 20px;
+  }
+  .delete {
+    width: 11px;
+    height: 11px;
+  }
+  .edit {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .name-el {
+    width: 10%;
+    font-size: 12px;
+  }
+  .email-el {
+    width: 5%;
+    font-size: 12px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .name-el {
+    width: 10%;
+    font-size: 16px;
+  }
+  .email-el {
+    width: 10%;
+    font-size: 16px;
+  }
+}
