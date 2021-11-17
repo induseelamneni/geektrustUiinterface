@@ -1,5 +1,5 @@
-import UiForm from './components/UiForm'
+import AdminUi from './components/AdminUi'
 
-const App = () => <UiForm />
+const App = () => <AdminUi />
 
 export default App

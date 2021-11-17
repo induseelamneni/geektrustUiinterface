@@ -1,0 +1,26 @@
+.save-btn {
+  background-color: #14a919;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  height: 28px;
+  width: 70px;
+  border-width: 0px;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+.cancel-btn {
+  background-color: #ec103c;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  height: 28px;
+  width: 70px;
+  border-width: 0px;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+.edit-input {
+  text-align: center;
+  margin-left: 10px;
+}
