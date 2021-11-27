@@ -25,7 +25,9 @@ class EditUsers extends Component {
   changeInput = event => {
     const {updatedUsers} = this.state
     const inputName = event.target.name
+
     const inputValue = event.target.value
+
     const newUserData = {...updatedUsers}
     newUserData[inputName] = inputValue
     this.setState({updatedUsers: newUserData})

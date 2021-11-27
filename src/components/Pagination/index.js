@@ -42,7 +42,7 @@ const Pagination = props => {
 
   return (
     <footer className="pagination-bottom">
-      <div className="nav-content">
+      <div className="delete-container ">
         <button
           type="button"
           className="delete-button1"
@@ -50,59 +50,60 @@ const Pagination = props => {
         >
           Delete Selected
         </button>
-        <ul className="pagination-btn-container">
-          <li>
-            <button
-              type="button"
-              onClick={goToFirstPage}
-              className="pagination-btn"
-            >
-              <BiFirstPage className="icon" />
-            </button>
-          </li>
-          <li>
-            <button
-              type="button"
-              onClick={decreaseActivePageNumber}
-              className="pagination-btn"
-            >
-              <GrFormPrevious className="icon" />
-            </button>
-          </li>
-          <li className="number-of-pages">
-            {pageNumber.map(num => (
-              <li key={num}>
-                <button
-                  type="button"
-                  className={
-                    num === activePageNumber ? 'pag-no active' : 'pag-no'
-                  }
-                >
-                  {num}
-                </button>
-              </li>
-            ))}
-          </li>
-          <li>
-            <button
-              type="button"
-              onClick={increaseActivePageNumber}
-              className="pagination-btn"
-            >
-              <GrFormNext className="icon" />
-            </button>
-          </li>
-          <li>
-            <button
-              type="button"
-              onClick={goToLastPage}
-              className="pagination-btn"
-            >
-              <BiLastPage className="icon" />
-            </button>
-          </li>
-        </ul>
       </div>
+
+      <ul className="pagination-btn-container">
+        <li>
+          <button
+            type="button"
+            onClick={goToFirstPage}
+            className="pagination-btn"
+          >
+            <BiFirstPage className="icon" />
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            onClick={decreaseActivePageNumber}
+            className="pagination-btn"
+          >
+            <GrFormPrevious className="icon" />
+          </button>
+        </li>
+        <li className="number-of-pages">
+          {pageNumber.map(num => (
+            <li key={num}>
+              <button
+                type="button"
+                className={
+                  num === activePageNumber ? 'pag-no active' : 'pag-no'
+                }
+              >
+                {num}
+              </button>
+            </li>
+          ))}
+        </li>
+        <li>
+          <button
+            type="button"
+            onClick={increaseActivePageNumber}
+            className="pagination-btn"
+          >
+            <GrFormNext className="icon" />
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            onClick={goToLastPage}
+            className="pagination-btn"
+          >
+            <BiLastPage className="icon" />
+          </button>
+        </li>
+      </ul>
     </footer>
   )
 }

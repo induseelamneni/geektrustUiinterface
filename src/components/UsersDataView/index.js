@@ -3,6 +3,8 @@ import {MdDeleteOutline} from 'react-icons/md'
 import {FiEdit} from 'react-icons/fi'
 import './index.css'
 
+// UserDataView Component
+
 class UsersDataView extends Component {
   state = {
     isChecked: false,
@@ -15,9 +17,6 @@ class UsersDataView extends Component {
 
     const selectedCheckbox = checkedList.push({checkedListId: event.target.id})
 
-    // Add item to it
-
-    // Set state
     this.setState(prevState => ({
       checkedList: [...prevState.checkedList, selectedCheckbox],
     }))
@@ -39,8 +38,6 @@ class UsersDataView extends Component {
     const onClickEdit = () => {
       editUserItem(userDetails.id)
     }
-
-    // const clickedCheckBoxStyle = isChecked ? 'list-active' : ''
 
     return (
       <li className={userDetails.select && 'select'}>

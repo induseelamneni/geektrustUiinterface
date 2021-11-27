@@ -8,9 +8,21 @@ import EditUser from '../EditUser'
 import UsersDataView from '../UsersDataView'
 import Pagination from '../Pagination'
 
+const fetchedDataStatus = {
+  initial: 'INITIAL',
+  success: 'SUCCESS',
+  failure: 'FAILURE',
+  inProgress: 'IN_PROGRESS',
+}
+
+const usersPerPageCount = 10
+
+// AdminUI Component
+
 class AdminUI extends Component {
   state = {
-    isLoading: true,
+    dataStatus: fetchedDataStatus.initial,
+
     userData: [],
     searchUserData: '',
     editUserId: null,
@@ -21,23 +33,32 @@ class AdminUI extends Component {
     this.getUserDetails()
   }
 
+  // Fetching Data
+
   getUserDetails = async () => {
+    this.setState({dataStatus: fetchedDataStatus.inProgress})
     const response = await fetch(
       'https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json',
     )
-    const data = await response.json()
-    const formattedData = data.map(each => ({
-      id: each.id,
-      name: each.name,
-      email: each.email,
-      role: each.role,
-    }))
+    if (response.ok) {
+      const data = await response.json()
 
-    this.setState({userData: formattedData, isLoading: false})
-  }
+      const formattedData = data.map(each => ({
+        id: each.id,
+        name: each.name,
+        email: each.email,
+        role: each.role,
+      }))
 
-  submitForm = event => {
-    event.preventDefault()
+      this.setState({
+        userData: formattedData,
+        dataStatus: fetchedDataStatus.success,
+      })
+    } else {
+      this.setState({
+        dataStatus: fetchedDataStatus.failure,
+      })
+    }
   }
 
   onChangeSearchInput = event => {
@@ -72,11 +93,11 @@ class AdminUI extends Component {
 
   toggleCheckBoxes = id => {
     const {userData} = this.state
-    const updatedUserData = userData.map(eachUserI => {
-      if (eachUserI.id === id) {
-        eachUserI.select = !eachUserI.select
+    const updatedUserData = userData.map(eachUser => {
+      if (eachUser.id === id) {
+        eachUser.select = !eachUser.select
       }
-      return eachUserI
+      return eachUser
     })
     this.setState({userData: updatedUserData})
   }
@@ -84,12 +105,12 @@ class AdminUI extends Component {
   onSelectingAll = event => {
     const {userData, activePageNumber} = this.state
     const selectingUserData = userData
-      .splice(activePageNumber * 10 - 10, activePageNumber * 10)
+      .slice(activePageNumber * 10 - 10, activePageNumber * 10)
       .map(eachUser => {
         eachUser.select = event.target.checked
         return eachUser
       })
-    userData.splice(activePageNumber * 10 - 10, 10, ...selectingUserData)
+    userData.slice(activePageNumber * 10 - 10, 10, ...selectingUserData)
     this.setState({userData})
   }
 
@@ -103,15 +124,19 @@ class AdminUI extends Component {
     this.setState({activePageNumber: num})
   }
 
-  onGetData = () => {
+  // When Data Fetching Failure Retry Button
+
+  retryRenderData = () => {
     this.getUserDetails()
   }
 
-  render() {
+  // Data Fetching Success View
+
+  successDataView = () => {
     const {
       userData,
       searchUserData,
-      isLoading,
+
       activePageNumber,
       editUserId,
     } = this.state
@@ -122,72 +147,121 @@ class AdminUI extends Component {
         eachUser.role.toLowerCase().includes(searchUserData),
     )
 
-    const usersPerPageCount = 10
-
     const lastUserIndex = activePageNumber * usersPerPageCount
+
     const firstUserIndex = lastUserIndex - usersPerPageCount
-    const currentUserData = searchResults.splice(firstUserIndex, lastUserIndex)
+
+    const currentUserData = searchResults.slice(firstUserIndex, lastUserIndex)
 
     const totalPagesCount = Math.ceil(searchResults.length / usersPerPageCount)
 
     return (
-      <form onSubmit={this.submitForm} className="form">
-        {isLoading ? (
-          <Loader type="TailSpin" color="#00BFFF" height={50} width={50} />
-        ) : (
-          <>
-            <div className="search-input-container">
-              <input
-                type="text"
-                className="search-form"
-                value={searchUserData}
-                onChange={this.onChangeSearchInput}
-                placeholder="Search by name, email or role"
-              />
-              <BsSearch />
+      <>
+        <div className="search-input-container">
+          <input
+            type="text"
+            className="search-form"
+            value={searchUserData}
+            onChange={this.onChangeSearchInput}
+            placeholder="Search by name, email or role"
+          />
+          <BsSearch className="search-icon" />
+        </div>
+        <ul className="ul-container">
+          <li className="list-style">
+            <tr className="user-data-list">
+              <td>
+                <input type="checkbox" onClick={this.onSelectingAll} />
+              </td>
+              <th className="name-el">S.no</th>
+              <th className="name-el">Name</th>
+              <th className="name-el">Email</th>
+              <th className="name-el">Role</th>
+              <th className="name-el">Actions</th>
+            </tr>
+            <hr />
+          </li>
+          {currentUserData.map(eachUser => (
+            <div key={eachUser.id} className="list-style">
+              {editUserId === eachUser.id ? (
+                <EditUser
+                  userDetails={eachUser}
+                  saveChanges={this.saveUserItem}
+                  cancelUpdates={this.editUserItem}
+                />
+              ) : (
+                <UsersDataView
+                  userDetails={eachUser}
+                  editUserItem={this.editUserItem}
+                  toggleCheckBoxes={this.toggleCheckBoxes}
+                  deleteUser={this.deleteUser}
+                />
+              )}
             </div>
-            <ul className="ul-container">
-              <li className="list-style">
-                <tr className="user-data-list">
-                  <td>
-                    <input type="checkbox" onClick={this.onSelectingAll} />
-                  </td>
-                  <th className="name-el">S.no</th>
-                  <th className="name-el">Name</th>
-                  <th className="name-el">Email</th>
-                  <th className="name-el">Role</th>
-                  <th className="name-el">Actions</th>
-                </tr>
-                <hr />
-              </li>
-              {currentUserData.map(eachUser => (
-                <div key={eachUser.id} className="list-style">
-                  {editUserId === eachUser.id ? (
-                    <EditUser
-                      userDetails={eachUser}
-                      saveChanges={this.saveUserItem}
-                      cancelUpdates={this.editUserItem}
-                    />
-                  ) : (
-                    <UsersDataView
-                      userDetails={eachUser}
-                      editUserItem={this.editUserItem}
-                      toggleCheckBoxes={this.toggleCheckBoxes}
-                      deleteUser={this.deleteUser}
-                    />
-                  )}
-                </div>
-              ))}
-            </ul>
+          ))}
+        </ul>
 
-            <Pagination
-              totalPagesCount={totalPagesCount}
-              activePageNumber={activePageNumber}
-              changePageNumber={this.changePageNumber}
-              deleteMultipleUsers={this.deleteMultipleUsers}
-            />
-          </>
-        )}
+        <Pagination
+          totalPagesCount={totalPagesCount}
+          activePageNumber={activePageNumber}
+          changePageNumber={this.changePageNumber}
+          deleteMultipleUsers={this.deleteMultipleUsers}
+        />
+      </>
+    )
+  }
+
+  // Data Loading View
+
+  LoadingView = () => (
+    <div className="loader-container">
+      <Loader type="TailSpin" color="#00BFFF" height={50} width={50} />
+    </div>
+  )
+
+  // Data Fetching Failure View
+
+  failureDataView = () => (
+    <div className="loader-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/not-found-blog-img.png"
+        alt="not found"
+        className="not-found-img"
+      />
+      <button
+        type="button"
+        onClick={this.retryRenderData}
+        className="retry-btn"
+      >
+        Retry
+      </button>
+    </div>
+  )
+
+  // According to fetched Data Switch to that View
+
+  renderData = () => {
+    const {dataStatus} = this.state
+    switch (dataStatus) {
+      case fetchedDataStatus.success:
+        return this.successDataView()
+      case fetchedDataStatus.failure:
+        return this.failureDataView()
+      case fetchedDataStatus.inProgress:
+        return this.LoadingView()
+      default:
+        return null
+    }
+  }
+
+  submitForm = event => {
+    event.preventDefault()
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.submitForm} className="form">
+        {this.renderData()}
       </form>
     )
   }
